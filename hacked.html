@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Localizador</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #1e1e2f;
+            color: white;
+            text-align: center;
+        }
+
+        .loading {
+            display: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #5e60ce;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #4e4fb8;
+        }
+
+        .result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>Irei descobrir sua cidade</h1>
+        <button id="getLocation">Clique para descobrir</button>
+        <div class="loading" id="loading">Obtendo sua localização...</div>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        const getLocationButton = document.getElementById("getLocation");
+        const loading = document.getElementById("loading");
+        const result = document.getElementById("result");
+
+        getLocationButton.addEventListener("click", () => {
+            if (navigator.geolocation) {
+                loading.style.display = "block";
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                    const { latitude, longitude } = position.coords;
+
+                    // Use uma API como OpenCage para converter as coordenadas
+                    const apiKey = "5d833829f003467e95547bf0f13d2fb8";
+                    const url = `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${apiKey}`;
+
+                    try {
+                        const response = await fetch(url);
+                        const data = await response.json();
+                        const cidade = data.results[0].components.city || "Cidade não identificada";
+
+                        loading.style.display = "none";
+                        result.innerText = `Você está em: ${cidade}`;
+                    } catch (error) {
+                        loading.style.display = "none";
+                        result.innerText = "Não foi possível determinar sua localização.";
+                    }
+                }, () => {
+                    loading.style.display = "none";
+                    result.innerText = "Permissão de localização negada.";
+                });
+            } else {
+                result.innerText = "Seu navegador não suporta geolocalização.";
+            }
+        });
+    </script>
+</body>
+</html>

@@ -3,85 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Localizador</title>
+    <title>HACKED!</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #1e1e2f;
-            color: white;
+            background-color: black;
+            color: lime;
+            font-family: "Courier New", Courier, monospace;
             text-align: center;
+            padding: 50px;
         }
-
-        .loading {
+        .hidden {
             display: none;
-        }
-
-        button {
-            padding: 10px 20px;
-            font-size: 1rem;
-            background-color: #5e60ce;
-            border: none;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #4e4fb8;
-        }
-
-        .result {
-            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div>
-        <h1>Irei descobrir sua cidade</h1>
-        <button id="getLocation">Clique para descobrir</button>
-        <div class="loading" id="loading">Obtendo sua localização...</div>
-        <div class="result" id="result"></div>
-    </div>
-
+    <h1>Você foi HACKEADO!</h1>
+    <p>Roubei todos os seus dados! Aguarde...</p>
+    <div id="location" class="hidden"></div>
     <script>
-        const getLocationButton = document.getElementById("getLocation");
-        const loading = document.getElementById("loading");
-        const result = document.getElementById("result");
-
-        getLocationButton.addEventListener("click", () => {
-            if (navigator.geolocation) {
-                loading.style.display = "block";
-                navigator.geolocation.getCurrentPosition(async (position) => {
-                    const { latitude, longitude } = position.coords;
-
-                    // Use uma API como OpenCage para converter as coordenadas
-                    const apiKey = "5d833829f003467e95547bf0f13d2fb8";
-                    const url = `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${apiKey}`;
-
-                    try {
-                        const response = await fetch(url);
-                        const data = await response.json();
-                        const cidade = data.results[0].components.city || "Cidade não identificada";
-
-                        loading.style.display = "none";
-                        result.innerText = `Você está em: ${cidade}. Agora eu tenho todos seus dados roubados ;)`;
-                    } catch (error) {
-                        loading.style.display = "none";
-                        result.innerText = "Não foi possível determinar sua localização.";
-                    }
-                }, () => {
-                    loading.style.display = "none";
-                    result.innerText = "Permissão de localização negada.";
-                });
-            } else {
-                result.innerText = "Seu navegador não suporta geolocalização.";
+        function vibrar() {
+            if (navigator.vibrate) {
+                navigator.vibrate([500, 300, 500]); // Vibrações
             }
-        });
+        }
+
+        function sucesso(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            // Chamada para a API OpenCage
+            fetch(`https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=5d833829f003467e95547bf0f13d2fb8`)
+                .then(response => response.json())
+                .then(data => {
+                    const cidade = data.results[0].components.city || "Cidade Desconhecida";
+                    const estado = data.results[0].components.state || "Estado Desconhecido";
+
+                    // Mostra a mensagem e vibra
+                    const locationDiv = document.getElementById('location');
+                    locationDiv.innerHTML = `<br>Localização detectada:<br>Cidade: ${cidade}<br>Estado: ${estado}`;
+                    locationDiv.classList.remove('hidden');
+                    vibrar();
+                })
+                .catch(() => {
+                    const locationDiv = document.getElementById('location');
+                    locationDiv.innerText = "Erro ao buscar localização.";
+                    locationDiv.classList.remove('hidden');
+                });
+        }
+
+        function erro() {
+            alert("Consegui acessar sua localização! Hahaha!");
+        }
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(sucesso, erro);
+        } else {
+            alert("Seu dispositivo não suporta geolocalização.");
+        }
     </script>
 </body>
 </html>

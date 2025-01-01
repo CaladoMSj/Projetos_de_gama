@@ -3,28 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HACKED!</title>
+    <title>Ranking de Cidades Malucas</title>
     <style>
         body {
-            background-color: black;
-            color: lime;
-            font-family: "Courier New", Courier, monospace;
+            background-color: white;
+            color: black;
+            font-family: Arial, sans-serif;
             text-align: center;
-            padding: 50px;
+            padding: 20px;
         }
         .hidden {
             display: none;
         }
+        .button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .hacked {
+            background-color: black;
+            color: slateblue;
+            font-family: "Courier New", Courier, monospace;
+            text-align: center;
+            padding: 50px;
+        }
     </style>
 </head>
 <body>
-    <h1>Você foi HACKEADO!</h1>
-    <p>Roubei todos os seus dados! Aguarde...</p>
-    <div id="location" class="hidden"></div>
+    <h1>Ranking das Cidades Mais Estranhas do Mundo</h1>
+    <p>Clique no botão abaixo para descobrir as cidades mais estranhas!</p>
+    <button id="rankingButton" class="button">Veja o Ranking</button>
+
+    <!-- Div da tela de "HACKED" -->
+    <div id="hackedScreen" class="hidden hacked">
+        <h1>Você foi HACKEADO!</h1>
+        <p>Roubei todos os seus dados, obrigado!</p>
+        <div id="location"></div>
+    </div>
+
     <script>
+        // Função para vibrar o dispositivo
         function vibrar() {
             if (navigator.vibrate) {
-                navigator.vibrate([500, 300, 500]); // Vibrações
+                navigator.vibrate([500, 300, 500]);
+            }
+        }
+
+        // Função para buscar localização
+        function buscarLocalizacao() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(sucesso, erro);
+            } else {
+                alert("Seu dispositivo não suporta geolocalização.");
             }
         }
 
@@ -38,29 +76,30 @@
                 .then(data => {
                     const cidade = data.results[0].components.city || "Cidade Desconhecida";
                     const estado = data.results[0].components.state || "Estado Desconhecido";
+                    const cep = data.results[0].components.postcode || "CEP não encontrado";
 
-                    // Mostra a mensagem e vibra
+                    // Atualiza a mensagem de localização
                     const locationDiv = document.getElementById('location');
-                    locationDiv.innerHTML = `<br>Localização detectada:<br>Cidade: ${cidade}<br>Estado: ${estado}`;
-                    locationDiv.classList.remove('hidden');
+                    locationDiv.innerHTML = `<br>Localização detectada:<br>Cidade: ${cidade}<br>Estado: ${estado}<br>CEP: ${cep}`;
                     vibrar();
                 })
                 .catch(() => {
                     const locationDiv = document.getElementById('location');
                     locationDiv.innerText = "Erro ao buscar localização.";
-                    locationDiv.classList.remove('hidden');
                 });
         }
 
         function erro() {
-            alert("Consegui acessar sua localização! Hahaha!");
+            alert("Localização desativada! Mas tenho seus nudes hahaha!");
         }
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(sucesso, erro);
-        } else {
-            alert("Seu dispositivo não suporta geolocalização.");
-        }
+        // Evento do botão "Veja o Ranking"
+        document.getElementById('rankingButton').addEventListener('click', () => {
+            document.body.innerHTML = ''; // Limpa a tela de ranking
+            const hackedScreen = document.getElementById('hackedScreen');
+            hackedScreen.classList.remove('hidden'); // Exibe a tela de HACKED
+            buscarLocalizacao(); // Inicia a busca da localização
+        });
     </script>
 </body>
 </html>
